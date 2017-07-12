@@ -1,9 +1,11 @@
 window.keyLogger = (function(){
     let key = {}
     window.addEventListener("keydown", e => {
+        e.preventDefault();
         key[e.key] = true;
     });
     window.addEventListener("keyup", e => {
+        e.preventDefault();
         key[e.key] = false;
     });
     return {

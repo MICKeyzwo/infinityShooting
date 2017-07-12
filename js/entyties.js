@@ -11,7 +11,10 @@ window._setEntyties = function(source, ctx, ent){
     function player(x, y){
         this.x = x;
         this.y = y;
+        this.exist = true;
+        this.expFrame = 0;
         this.img = source.player;
+        this.expImg = source.explosion;
     }
     player.prototype.move = function(x, y){
         this.x += x;
@@ -25,10 +28,16 @@ window._setEntyties = function(source, ctx, ent){
         ctx.drawImage(this.img, this.x - 25, this.y - 25);
     }
     player.prototype.hitAmmo = function(ent){
-        return Math.sqrt(Math.pow(this.x - ent.x, 2) + Math.pow(this.y - ent.y, 2)) <= 30;
+        return Math.sqrt(Math.pow(this.x - ent.x, 2) + Math.pow(this.y - ent.y, 2)) <= 25;
     }
     player.prototype.hitEnemy = function(ent){
-        return Math.sqrt(Math.pow(this.x - ent.x, 2) + Math.pow(this.y - ent.y, 2)) <= 45;
+        return Math.sqrt(Math.pow(this.x - ent.x, 2) + Math.pow(this.y - ent.y, 2)) <= 40;
+    }
+    player.prototype.explosion = function(){
+        if(this.expFrame < 5){
+            ctx.drawImage(this.expImg, this.expFrame * 70, 0, 70, 70, this.x -35, this.y - 35, 70, 70);
+            this.expFrame++;
+        }
     }
 
     function ammo(x, y){
@@ -86,7 +95,7 @@ window._setEntyties = function(source, ctx, ent){
         let x = ((Math.random() * 400) | 0), y = -25;
         enemy.call(this, x, y, 0, 1, 100);
         this.img = source.coin;
-        let rad = Math.atan2(pl.y - y, pl.x - x);
+        let rad = Math.atan2(pl.y - y + ((Math.random() * 51) | 0) - 25, pl.x - x + ((Math.random() * 51) | 0) - 25);
         this.vx = Math.cos(rad) * 7;
         this.vy = Math.sin(rad) * 7;
         this.turned = false;
@@ -108,7 +117,7 @@ window._setEntyties = function(source, ctx, ent){
     }
 
     function kamikaze(pl){
-        enemy.call(this, pl.x, -25, 0, 3, 350);
+        enemy.call(this, pl.x + ((Math.random() * 51) | 0) - 25, -25, 0, 3, 350);
         this.img = source.kamikaze;
     }
     Object.setPrototypeOf(kamikaze.prototype, enemy.prototype);
@@ -150,10 +159,25 @@ window._setEntyties = function(source, ctx, ent){
         return this.stop > 0 ? ((Math.random() * 20) | 0) === 0 : false;
     }
 
+    function debri(x, y){
+        this.x = x;
+        this.y = y;
+        this.frame = 0;
+        this.img = source.debri;
+    }
+    debri.prototype.update = function(){
+        this.frame++;
+        return this.frame < 5;
+    }
+    debri.prototype.draw = function(){
+        ctx.drawImage(this.img, this.frame * 70, 0, 70, 70, this.x -35, this.y - 35, 70, 70);
+    }
+
     ent.Player = player;
-    ent.Coin = coin;
     ent.Ammo = ammo;
     ent.Eammo = eammo;
+    ent.Debri = debri;
+    ent.Coin = coin;
     ent.Kamikaze = kamikaze;
     ent.Turner = turner;
 
