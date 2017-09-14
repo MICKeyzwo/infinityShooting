@@ -1,4 +1,5 @@
 window.MediaLoader = (() => {
+    function Video() {return document.createElement("video")}
     function load(src, cb, ref, type){
         if(typeof src !== "object") {console.log("illegal argument.\nplease throw srcs with object."); return;}
         if(typeof cb !== "function") {console.log("illegal argument.\nplease throw callback with function."); return;}
@@ -6,7 +7,7 @@ window.MediaLoader = (() => {
         let res = {};
         for(let i in src){
             done[i] = false;
-            res[i] = type === "i" ? new Image() : type === "a" ? new Audio() : document.createElement("video");
+            res[i] = new type();
         }
         for(let i in src){
             res[i].src = src[i];
@@ -25,13 +26,13 @@ window.MediaLoader = (() => {
     }
     let proto = {
         loadImage: function(src, cb, ref){
-            load(src, cb, ref, "i");
+            load(src, cb, ref, Image);
         },
         loadAudio: function(src, cb, ref){
-            load(src, cb, ref, "a");
+            load(src, cb, ref, Audio);
         },
         loadVideo: function(src, cb, ref){
-            load(src, cb, ref, "v");
+            load(src, cb, ref, Video);
         }
     };
     function create(){
